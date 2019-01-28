@@ -21,8 +21,8 @@ pipeline {
             description: 'workspace name for terraform to run'
         )
         choice(
-            name: 'tfvarsfiles',
-            choices: 'sit2.tfvars\nvnp.tfvars',
+            name: 'variablefiles',
+            choices: 'variables.tf',
             description: 'select terraform parameters file to run'
         )
 
@@ -42,14 +42,14 @@ pipeline {
         WS          = "${params.ws_option}"
         WSNAME      = "${params.ws_name}"
         DEPLOYMENT  = "${params.deploy}"
-        TFVARSFILE  = "${params.tfvarsfiles}"
+        TFVARSFILE  = "${params.variable}"
         APPROVE     = "${params.approvals}"
         ARM_SUBSCRIPTION_ID  = credentials("ARM_subscription_id")
         ARM_CLIENT_ID       = credentials("ARM_client_id")
         ARM_CLIENT_SECRET   = credentials("ARM_clientsecret_id")
         ARM_TENANT_ID       = credentials("ARM_tenant_id")
-        STORAGE_ACCOUNT_KEY = credentials("access_key_storageacc_prodeunnonpcisada0001")
-        WORKDIR_CMD         = '/var/jenkins/workspace/terraform-endeca-itl-pipeline/azure_managed/dotcom-ihs-wcs-author-stack'
+        STORAGE_ACCOUNT_KEY = credentials("access_key_storageacc_")
+        WORKDIR_CMD         = '/var/jenkins/workspace/azuredevops/'
     }
     stages {
         stage('checkout-repo') {
@@ -59,7 +59,7 @@ pipeline {
         }
         stage('init-terraform') {
             steps {
-                sh 'cd ${WORKDIR_CMD} && terraform init -backend-config="key=state-file" -backend-config="storage_account_name=prodeunnonpcisada0001" -backend-config="container_name=prod-eun-tfstat-blob-001" -backend-config="access_key=$STORAGE_ACCOUNT_KEY"'
+                sh 'cd ${WORKDIR_CMD} && terraform init -backend-config="key=state-file" -backend-config="storage_account_name=anvita0001" -backend-config="container_name=anvita-tfstat-blob-001" -backend-config="access_key=$STORAGE_ACCOUNT_KEY"'
             }
         }
         stage('workspace-terraform') {
@@ -69,7 +69,7 @@ pipeline {
         }
         stage('deploy-terraform') {
             steps {
-                sh 'cd ${WORKDIR_CMD} && terraform $DEPLOYMENT -var-file="$TFVARSFILE" $APPROVE'
+                sh 'cd ${WORKDIR_CMD} && terraform $DEPLOYMENT -var-file="$VARIABLE" $APPROVE'
             }
         }
     }
